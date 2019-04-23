@@ -1,6 +1,7 @@
 import MathUtils._
 
-case class StochasticGradientDescent(learningRate: Double, epochs: Int) {
+case class AdaGrad(learningRate: Double, epochs: Int, eps: Double) {
+
   private var trainingData: List[(Feature, Target)] = _
 
   def withData(lines: List[(Feature, Target)]): this.type = {
@@ -15,11 +16,18 @@ case class StochasticGradientDescent(learningRate: Double, epochs: Int) {
 
     var theta: Double = 0
     var prevTheta: Double = -1
+    var S: Double = 0
 
-    while (math.abs(theta - prevTheta) > convergenceLimit) {
+    def gradientFunction(theta: Double): Double = {
+      val sum = trainingData.foldLeft(0d)((acc, data) => acc + (data._2 - makeHypothesis(theta)(data._1)) * data._1)
+      sum / 2
+    }
+
+    while(math.abs(theta - prevTheta) > convergenceLimit) {
       prevTheta = theta
-      for ((x, y) <- trainingData)
-        theta = theta + learningRate * (y - makeHypothesis(theta)(x)) * x
+      val gradientVal = gradientFunction(theta)
+      S = S + gradientVal ** 2
+      theta = theta + (learningRate / math.sqrt(S + eps)) * gradientVal
     }
 
     makeHypothesis(theta)

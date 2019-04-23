@@ -1,5 +1,7 @@
 object MathUtils {
 
+  val convergenceLimit: Double = 10 ** -4
+
   //math toolkit
   implicit class EnhancedDouble(thisDouble: Double) {
 

@@ -1,6 +1,7 @@
 import MathUtils._
 
-case class StochasticGradientDescent(learningRate: Double, epochs: Int) {
+case class BatchGradientDescent(learningRate: Double, epochs: Int) {
+
   private var trainingData: List[(Feature, Target)] = _
 
   def withData(lines: List[(Feature, Target)]): this.type = {
@@ -13,15 +14,18 @@ case class StochasticGradientDescent(learningRate: Double, epochs: Int) {
 
   def build: Hypothesis = {
 
-    var theta: Double = 0
     var prevTheta: Double = -1
+    var theta: Double = 0
 
+    //repeat until convergence
     while (math.abs(theta - prevTheta) > convergenceLimit) {
+
       prevTheta = theta
-      for ((x, y) <- trainingData)
-        theta = theta + learningRate * (y - makeHypothesis(theta)(x)) * x
+      theta = theta + learningRate * trainingData.foldLeft(0d)((acc, data) =>
+        acc + ((data._2 - makeHypothesis(theta)(data._1)) * data._1))
     }
 
     makeHypothesis(theta)
   }
+
 }
