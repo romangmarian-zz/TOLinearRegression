@@ -34,6 +34,9 @@ object Boot extends App {
 
   println("AdaDelta")
   println(AdaDelta(10000, 0.95, 10 ** (-4)).withData(trainingList).build(39))
+
+  println("Adam")
+  println(Adam(0.1, 1000, 0.9, 0.999, 10 ** -8).withData(trainingList).build(39))
 }
 
 
